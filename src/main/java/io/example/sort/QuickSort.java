@@ -1,22 +1,25 @@
-package io.example;
+package io.example.sort;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QuickSort<T extends Comparable<T>> implements Sort<T> {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(QuickSort.class);
   private final AtomicLong counter = new AtomicLong(0);
 
   @Override
   public List<T> sort(Iterable<T> iterable) {
     ArrayList<T> list = new ArrayList<>();
     iterable.forEach(list::add);
-    System.out.println("Input: " + list);
+    LOGGER.debug("Input: {}", list);
     List<T> sorted = List.copyOf(
         sort(list, 0, list.size() - 1)
     );
-    System.out.println("Iterations: " + counter.get());
+    LOGGER.debug("Iterations: {}", counter.get());
     return sorted;
   }
 

@@ -1,4 +1,4 @@
-package io.example
+package io.example.sort
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.contains
