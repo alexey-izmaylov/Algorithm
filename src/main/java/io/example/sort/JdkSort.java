@@ -8,7 +8,8 @@ public class JdkSort<T extends Comparable<T>> implements Sort<T> {
 
   @Override
   public List<T> sort(List<T> list) {
-    new ArrayList<>(list).sort(Comparator.naturalOrder());
-    return list;
+    ArrayList<T> result = new ArrayList<>(list);
+    result.sort(Comparator.naturalOrder());
+    return result;
   }
 }
