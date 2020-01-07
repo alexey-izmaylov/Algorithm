@@ -12,13 +12,9 @@ public class QuickSort<T extends Comparable<T>> implements Sort<T> {
   private final AtomicLong counter = new AtomicLong(0);
 
   @Override
-  public List<T> sort(Iterable<T> iterable) {
-    ArrayList<T> list = new ArrayList<>();
-    iterable.forEach(list::add);
+  public List<T> sort(List<T> list) {
     LOGGER.debug("Input: {}", list);
-    List<T> sorted = List.copyOf(
-        sort(list, 0, list.size() - 1)
-    );
+    List<T> sorted = sort(new ArrayList<>(list), 0, list.size() - 1);
     LOGGER.debug("Iterations: {}", counter.get());
     return sorted;
   }

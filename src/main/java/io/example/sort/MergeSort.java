@@ -2,6 +2,7 @@ package io.example.sort;
 
 import static java.lang.Math.min;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -14,55 +15,50 @@ public class MergeSort<T extends Comparable<T>> implements Sort<T> {
   private static final Logger LOGGER = LoggerFactory.getLogger(MergeSort.class);
 
   @Override
-  public List<T> sort(Iterable<T> list) {
-    List<T> arrayList = new LinkedList<>();
-    list.forEach(arrayList::add);
-    return sort(arrayList, 0);
+  public List<T> sort(List<T> list) {
+    return sort(new ArrayList<>(list), 0);
   }
 
-  private List<T> sort(List<T> list, final int level) {
+  private List<T> sort(final List<T> input, final int level) {
     final int group = (int) Math.pow(2, level);
-    LOGGER.debug("level={} group={} list={}", level, group, list);
+    if (group < input.size()) {
+      LOGGER.debug("level={} group={} input={}", level, group, input);
 
-    if (group < list.size()) {
-      List<T> newList = new LinkedList<>();
-      for (int from = 0; from < list.size(); from += 2 * group) {
+      final List<T> list = new LinkedList<>();
+      for (int from = 0; from < input.size(); from += 2 * group) {
 
-        int middle = min(from + group, list.size());
-        List<T> left = list.subList(from, middle);
-        int to = min(from + 2 * group, list.size());
-
-        LOGGER.debug("    index from {} to {}", from, to - 1);
+        final int middle = min(from + group, input.size());
+        final List<T> left = input.subList(from, middle);
+        final int to = min(from + 2 * group, input.size());
 
         if (middle == to) {
-          LOGGER.debug("    already merged group: {}", left);
-          newList.addAll(left);
+          LOGGER.debug("  sorted group ({}..{}): {}", from, middle - 1, left);
+          list.addAll(left);
         } else {
-          LOGGER.debug("    merge left ({}..{}) with right ({}..{})", from, middle - 1, middle, to - 1);
-          newList.addAll(
-              merge(
-                  new LinkedList<>(left),
-                  new LinkedList<>(list.subList(middle, to))
-              ));
+          List<T> merged = merge(
+              new LinkedList<>(left),
+              new LinkedList<>(input.subList(middle, to))
+          );
+          LOGGER.debug("  merged sorted left ({}..{}) with right ({}..{}): {}", from, middle - 1, middle, to - 1, merged);
+          list.addAll(merged);
         }
       }
-      return sort(newList, level + 1);
+      return sort(list, level + 1);
     } else {
-      return list;
+      return input;
     }
   }
 
-  private List<T> merge(LinkedList<T> left, LinkedList<T> right) {
-    List<T> list = new LinkedList<>();
+  private List<T> merge(final Queue<T> left, final Queue<T> right) {
+    final List<T> result = new LinkedList<>();
     Optional<T> optional;
-    while ((optional = pollMin(left, right)).isPresent()) {
-      list.add(optional.get());
+    while ((optional = minimal(left, right)).isPresent()) {
+      result.add(optional.get());
     }
-    LOGGER.debug("        sorted merged group: {}", list);
-    return list;
+    return result;
   }
 
-  private Optional<T> pollMin(Queue<T> left, Queue<T> right) {
+  private Optional<T> minimal(final Queue<T> left, final Queue<T> right) {
     if (left.isEmpty() && right.isEmpty()) return Optional.empty();
     if (left.isEmpty()) return Optional.of(right.poll());
     if (right.isEmpty()) return Optional.of(left.poll());
