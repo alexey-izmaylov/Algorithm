@@ -20,7 +20,7 @@ public class MergeSort<T extends Comparable<T>> implements Sort<T> {
   }
 
   private List<T> sort(final List<T> input, final int level) {
-    final int group = (int) Math.pow(2, level);
+    final int group = 1 << level;
     if (group < input.size()) {
       LOGGER.debug("level={} group={} input={}", level, group, input);
 
